@@ -1,23 +1,20 @@
-name: Close Pull Request
-
-# only trigger on pull request closed events
+name: Replace branch name
 on:
   pull_request:
-    types: [ closed ]
-
+    types: [closed]
 jobs:
-  merge_job:
-    # this job will only run if the PR has been merged
-    if: github.event.pull_request.merged == true
+  replace:
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo PR #${{ github.event.number }} has been merged
-
-  close_job:
-    # this job will only run if the PR has been closed without being merged
-    if: github.event.pull_request.merged == false
-    runs-on: ubuntu-latest
-    steps:
-    - run: |
-        echo PR #${{ github.event.number }} has been closed without being merged
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Replace branch name
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            BRANCH_NAME=${{ github.head_ref }}
+            find . -name '*' -exec sed -i 's/'"$BRANCH_NAME"'/v48.0.0/g' {} \;
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git commit -am "Replace branch name with v48.0.0"
+            git push
+          fi
