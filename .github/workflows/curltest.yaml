@@ -1,0 +1,10 @@
+name: Nightly Java build
+on: 
+  workflow_dispatch
+jobs:
+  execute_pipeline_run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl call
+        run: |
+          curl -X --fail-with-body POST "https://pac-controller-weu-dev-1.orca.ortec-fin3ance.com/incoming?secret=INCOMING_SECRETrepository=chapter-demo-repository&branch=develop&pipelinerun=develop-build-api-java" -d ""
